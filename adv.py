@@ -12,8 +12,8 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-# map_file = "maps/test_cross.txt"
-map_file = "maps/test_loop.txt"
+map_file = "maps/test_cross.txt"
+# map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
@@ -78,67 +78,67 @@ class Graph:
             self.add_edge(player.current_room.id,objects)
         if visited is None:
             visited=set()
-
-        visited.add(starting_vertex)
+        
+        if starting_vertex==0 and "?" not in self.vertices[starting_vertex].values():
+            return
+        
         # print(starting_vertex, self.vertices,self.vertices[starting_vertex])
-        for child_vert in self.vertices[starting_vertex]:
+        else:
+            for child_vert in self.vertices[starting_vertex]:  
             
-            traversal_path.append(child_vert)
-            print(child_vert,starting_vertex, self.vertices,visited)
-            while "?" not in self.vertices[starting_vertex].values():
-                self.get_all_social_paths
-                print("INSIDE",child_vert,starting_vertex, self.vertices,visited)               
-                if len(self.vertices[starting_vertex].values())<=1:
-                    traversal_path.append(child_vert)
-                    player.travel(child_vert)
-                elif child_vert=="n":
-                    print("s while",player.current_room.id, child_vert, starting_vertex)
-                    traversal_path.append("s")
-                    player.travel("s")
-                elif child_vert=="s":
-                    print("n while",player.current_room.id, child_vert, starting_vertex)
-                    traversal_path.append("n")
-                    player.travel("n")
-                elif child_vert=="e":
-                    print("w while",player.current_room.id, child_vert, starting_vertex)
-                    traversal_path.append("w")
-                    player.travel("w")
-                elif child_vert=="w":
-                    print("e while",player.current_room.id, child_vert, starting_vertex)
-                    traversal_path.append("e")
-                    player.travel("e")
-                self.dft_recursive(player.current_room.id, visited)
-            print("Top",child_vert,player.current_room.id)
-            player.travel(child_vert)
-            print(child_vert,player.current_room.id)
-            if player.current_room.id not in visited or "?" in self.vertices[starting_vertex].values():
-                print("HERE",child_vert,starting_vertex,visited)
-                if player.current_room.id not in self.vertices[starting_vertex].values():
-                    self.add_vertex(player.current_room.id)
-                    obj={}
-                    for i in player.current_room.get_exits():
-                        obj[i]="?"    
-                    self.add_edge(player.current_room.id,obj)
-                    obj={}
-                    if child_vert=="n":
-                        print("n",player.current_room.id, child_vert, starting_vertex)
-                        self.vertices[starting_vertex][child_vert]=player.current_room.id
-                        self.vertices[player.current_room.id]["s"]=starting_vertex
-                    elif child_vert=="s":
-                        print("s",player.current_room.id, child_vert, starting_vertex)
-                        self.vertices[starting_vertex][child_vert]=player.current_room.id
-                        self.vertices[player.current_room.id]["n"]=starting_vertex
-                    elif child_vert=="e":
-                        print("e",player.current_room.id, child_vert, starting_vertex)
-                        self.vertices[starting_vertex][child_vert]=player.current_room.id
-                        self.vertices[player.current_room.id]["w"]=starting_vertex
-                    elif child_vert=="w":
-                        print("w",player.current_room.id, child_vert, starting_vertex)
-                        self.vertices[starting_vertex][child_vert]=player.current_room.id
-                        self.vertices[player.current_room.id]["e"]=starting_vertex
-
+                print(child_vert,starting_vertex, self.vertices,self.vertices[starting_vertex].values())
+                if "?" not in self.vertices[starting_vertex].values():
+                    if starting_vertex==0:
+                        return self.dft_recursive(0, visited)
+                    print("INSIDE",child_vert,starting_vertex, self.vertices,visited)
+                    visited.add(starting_vertex)  
+                    arr=self.get_all_social_paths(0)  
+                    print("arr[starting_vertex]",arr[starting_vertex])
+                    for movement in arr[starting_vertex]:
+                        for move in self.vertices[starting_vertex].keys():
+                            if self.vertices[starting_vertex][move]==movement:
+                                    print("TEEEEST",movement,move,starting_vertex)
+                                    player.travel(move)
+                                    if player.current_room.id==0 and "?" not in self.vertices[player.current_room.id].values():
+                                        break
+                                    print("player.current_room.id",player.current_room.id)
+                                    traversal_path.append(move)
+                                    
                     self.dft_recursive(player.current_room.id, visited)
-                    print("visited",visited)
+                if self.vertices[starting_vertex][child_vert] == "?":
+                    print("Direcrtion",child_vert,"Current Room",player.current_room.id,"starting_vertex",starting_vertex,self.vertices[starting_vertex],"Wow",self.vertices[starting_vertex][child_vert])
+                    # if self.vertices[starting_vertex][child_vert]=="?":
+                    player.travel(child_vert)
+                    print(child_vert,player.current_room.id)
+                    if player.current_room.id not in visited:
+                        print("HERE",child_vert,starting_vertex,visited)
+                        traversal_path.append(child_vert)
+                        if player.current_room.id not in self.vertices[starting_vertex].values():
+                            self.add_vertex(player.current_room.id)
+                            obj={}
+                            for i in player.current_room.get_exits():
+                                obj[i]="?"    
+                            self.add_edge(player.current_room.id,obj)
+                            obj={}
+                            if child_vert=="n":
+                                print("n",player.current_room.id, child_vert, starting_vertex)
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["s"]=starting_vertex
+                            elif child_vert=="s":
+                                print("s",player.current_room.id, child_vert, starting_vertex)
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["n"]=starting_vertex
+                            elif child_vert=="e":
+                                print("e",player.current_room.id, child_vert, starting_vertex)
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["w"]=starting_vertex
+                            elif child_vert=="w":
+                                print("w",player.current_room.id, child_vert, starting_vertex)
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["e"]=starting_vertex
+
+                            self.dft_recursive(player.current_room.id, visited)
+                            print("visited",visited)
     def dfs_recursive(self, starting_vertex, target_value,visited=None, path=None):
         """
         Return a list containing a path from
@@ -176,23 +176,24 @@ class Graph:
         queue.enqueue([user_id])
         while queue.size()>0:
             path=queue.dequeue()
-            print("path",path)
+            # print("path",path)
             current_user = path[-1]
-            print("current_user", current_user)
+            # print("current_user", current_user)
             if current_user not in visited:
-                print("visited", visited)
+                # print("visited", visited)
                 visited[current_user]=path
 
                 if len(visited[current_user])<len(shortest) and len(visited[current_user])>1:
                     shortest=visited[current_user]
-                for ID in self.vertices[current_user]:
+                for ID in self.vertices[current_user].values():
+                    # print("ID", ID)
                     if type(ID) ==int:
                         new_path=list(path)
                         new_path.append(ID)
                         queue.enqueue(new_path)
                     
         del visited[user_id]
-        print("shortest",shortest)
+        # print("shortest",shortest, visited)
         return visited
 
 graphs=Graph()
