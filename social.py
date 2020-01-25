@@ -1,96 +1,119 @@
-import random
-# from graph import Graph
-from util import Stack, Queue  # These may come in handy
 
-
-class User:
-    def __init__(self, name):
-        self.name = name
-
-class SocialGraph:
-    def __init__(self):
-        self.last_id = 0
-        self.users = {}
-        self.friendships = {}
-
-    def add_friendship(self, user_id, friend_id):
+def dft_recursive(self, starting_vertex, visited=None):
         """
-        Creates a bi-directional friendship
+        Print each vertex in depth-first order
+        beginning from starting_vertex.
+        This should be done using recursion.
         """
-        if user_id == friend_id:
-            print("WARNING: You cannot be friends with yourself")
-        elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
-            print("WARNING: Friendship already exists")
+        Directions=["n","s","e","w"]
+        if len(self.vertices)<=1:
+            self.add_vertex(starting_vertex)
+            objects={}
+            for i in player.current_room.get_exits():
+                objects[i]="?"    
+            self.add_edge(player.current_room.id,objects)
+        if visited is None:
+            visited=set()
+        
+        if self.get_all_social_paths(starting_vertex,"?") == None:
+            return
+
+        if "?" not in self.vertices[starting_vertex].values():
+            arr=self.get_all_social_paths(starting_vertex,"?")   
+            for movement in arr[starting_vertex]:
+                        for move in self.vertices[starting_vertex].keys():
+                            if self.vertices[starting_vertex][move]==movement:
+                                    # print("TEEEEST",movement,move,starting_vertex)
+                                    player.travel(move)
+                                    traversal_path.append(move)
+
+            self.dft_recursive(player.current_room.id, visited)       
+
         else:
-            self.friendships[user_id].add(friend_id)
-            self.friendships[friend_id].add(user_id)
+            RandomDirection=random.range(0,4)
+            for child_vert in self.vertices[starting_vertex]:  
+                if child_vert ==Directions[RandomDirection]:
+                    if self.vertices[starting_vertex][child_vert] == "?":
+                        player.travel(child_vert)
+                        if player.current_room.id not in self.vertices.keys():
+                            self.add_vertex(player.current_room.id)
+                            obj={}
+                            for i in player.current_room.get_exits():
+                                obj[i]="?"    
+                            self.add_edge(player.current_room.id,obj)
+                            obj={}
+                        if player.current_room.id not in visited:
+                            traversal_path.append(child_vert)
 
-    def add_user(self, name):
+                            if child_vert=="n":
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["s"]=starting_vertex
+                            elif child_vert=="s":
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["n"]=starting_vertex
+                            elif child_vert=="e":
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["w"]=starting_vertex
+                            elif child_vert=="w":
+                                self.vertices[starting_vertex][child_vert]=player.current_room.id
+                                self.vertices[player.current_room.id]["e"]=starting_vertex
+
+                            self.dft_recursive(player.current_room.id, visited)
+                            # print("visited",visited)
+
+def get_all_social_paths(self, starting_vertex,destination_vertex):
         """
-        Create a new user with a sequential integer ID
-        """
-        self.last_id += 1  # automatically increment the ID to assign the new user
-        self.users[self.last_id] = User(name)
-        self.friendships[self.last_id] = set()
-
-    def populate_graph(self, num_users, avg_friendships):
-        """
-        Takes a number of users and an average number of friendships
-        as arguments
-
-        Creates that number of users and a randomly distributed friendships
-        between those users.
-
-        The number of users must be greater than the average number of friendships.
-        """
-        # Reset graph
-        self.last_id = 0
-        self.users = {}
-        self.friendships = {}
-
-        for i in range(num_users):
-            self.add_user(i)
-
-        possible_friendships=[]
-        for user_id in self.users:
-            for friend_id in range(user_id+1, self.last_id+1):
-                possible_friendships.append((user_id, friend_id))
-
-        random.shuffle(possible_friendships)
-
-        for i in range(num_users*avg_friendships//2):
-            friendship= possible_friendships[i]
-            self.add_friendship(friendship[0],friendship[1])
-
-
-    def get_all_social_paths(self, user_id):
-        """
-        Takes a user's user_id as an argument
+        Takes a user's starting_vertex as an argument
 
         Returns a dictionary containing every user in that user's
         extended network with the shortest friendship path between them.
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-
+        visited = {} # Note that this is a dictionary, not a set
+        shortest=[None]*len(self.vertices)
+        # variable=0
         queue=Queue()
-        queue.enqueue([user_id])
+        queue.enqueue([starting_vertex])
         while queue.size()>0:
             path=queue.dequeue()
+            # print("path",path)
             current_user = path[-1]
+            # print("current_user", current_user)
             if current_user not in visited:
+                print("visited", visited,"starting_vertex",starting_vertex,"destination_vertex",destination_vertex)
                 visited[current_user]=path
-                for ID in self.friendships[current_user]:
-                    new_path=list(path)
-                    new_path.append(ID)
-                    queue.enqueue(new_path)
+
+                for ID in self.vertices[current_user].values():
+                    print("ID", ID)
+                    if ID =="?":
+                        new_path=list(path)
+                        new_path.append(ID)
+                        queue.enqueue(new_path)
+                        if len(visited[current_user])<len(shortest) and len(visited[current_user])>1:
+                            shortest=visited[current_user]
+                    
+        # del visited[user_id]
+        print("shortest",shortest, visited)
         return visited
 
 
-if __name__ == '__main__':
-    sg = SocialGraph()
-    sg.populate_graph(10, 2)
-    print(sg.friendships)
-    connections = sg.get_all_social_paths(1)
-    print(connections)
+
+                if "?" not in self.vertices[starting_vertex].values():
+                    # if starting_vertex==0:
+                    #     return self.dft_recursive("?", visited)
+                    # print("INSIDE",child_vert,starting_vertex, self.vertices,visited)
+                    visited.add(starting_vertex)  
+                    arr=self.get_all_social_paths(starting_vertex,"?")  
+                    print("arr[starting_vertex]",arr[starting_vertex])
+                    for movement in arr[starting_vertex]:
+                        for move in self.vertices[starting_vertex].keys():
+                            if self.vertices[starting_vertex][move]==movement:
+                                    # print("TEEEEST",movement,move,starting_vertex)
+                                    player.travel(move)
+                                    if player.current_room.id==0 and "?" not in self.vertices[player.current_room.id].values():
+                                        return
+                                    # print("player.current_room.id",player.current_room.id)
+                                    traversal_path.append(move)
+
+                    self.dft_recursive(player.current_room.id, visited)
