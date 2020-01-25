@@ -4,7 +4,8 @@ from world import World
 from util import Stack, Queue
 import random
 from ast import literal_eval
-
+import sys
+sys.setrecursionlimit(15000)
 # Load world
 world = World()
 
@@ -15,6 +16,7 @@ world = World()
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 map_file = "maps/main_maze.txt"
+
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -83,11 +85,13 @@ class Graph:
         if "?" not in self.vertices[starting_vertex].values():
             visited.add(starting_vertex)
             arr=self.get_all_social_paths(starting_vertex,"?")
+            print("arr",arr)
             if arr== None:
                 print("Break")
                 return
             else:
                 print("Continue", self.vertices)
+
                 # print("arr",arr,"arr[starting_vertex]",starting_vertex)   
                 for movement in arr:
                             # print("TEEEEST",movement,starting_vertex,self.vertices[starting_vertex].keys())
